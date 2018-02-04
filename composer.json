@@ -1,0 +1,36 @@
+{
+    "name": "wec/php-review",
+    "type": "library",
+    "authors": [
+        {
+            "name": "zhanjh",
+            "email": "zhanjh@126.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Wec\\Review\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "phpunit\\Wec\\Review\\": "phpunit"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@phpcs",
+            "@phpmd",
+            "@phpstan",
+            "@phpunit"
+        ],
+        "phpunit": "phpunit",
+        "phpstan": "phpstan analyse -l 7 -c phpstan.neon phpunit src",
+        "phpcs": "phpcs --report=full --standard=psr2 --extensions=php src phpunit",
+        "phpmd": "phpmd src,phpunit text cleancode,codesize,controversial,design,naming,unusedcode"
+    },
+    "require": {
+        "gap/database": "^1.0",
+        "gap/dto": "^1.0"
+    }
+}

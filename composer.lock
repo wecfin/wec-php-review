@@ -1,0 +1,84 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "d11efa85b379d1b90b441cb6b2638b2e",
+    "packages": [
+        {
+            "name": "gap/database",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://project.tecposter.cn/diffusion/52/gap-php-database.git",
+                "reference": "6068dce0a45ce46a224661d816853b272a77eb38"
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gap\\Database\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "zhanjh",
+                    "email": "zhanjh@126.com"
+                }
+            ],
+            "description": "Gap Database",
+            "homepage": "https://project.tecposter.cn/diffusion/52/",
+            "keywords": [
+                "gap"
+            ],
+            "time": "2017-12-11T10:10:34+00:00"
+        },
+        {
+            "name": "gap/dto",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://project.tecposter.cn/diffusion/75/gap-php-dto.git",
+                "reference": "892adce9ba99b691246679a2801995d7d35e5043"
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gap\\Dto\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "zhanjh",
+                    "email": "zhanjh@126.com"
+                }
+            ],
+            "description": "Gap Dto",
+            "homepage": "https://project.tecposter.cn/diffusion/75/",
+            "keywords": [
+                "dto",
+                "gap"
+            ],
+            "time": "2018-01-15T07:26:22+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
