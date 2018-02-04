@@ -4,5 +4,7 @@ namespace Wec\Review\Dto;
 class ReviewerDto extends DtoBase
 {
     public $employeeId;
-    public $rank;
+    public $fullName;
+    public $sequence;
+    public $created;
 }
