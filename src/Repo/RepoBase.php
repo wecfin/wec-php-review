@@ -8,6 +8,8 @@ class RepoBase
     protected $cnn;
     protected $dst;
 
+    protected $dstKey;
+
     public function __construct(DatabaseManager $dmg, string $database = 'default')
     {
         $this->cnn = $dmg->connect($database);
@@ -23,6 +25,11 @@ class RepoBase
 
     protected function getDstKey(): string
     {
-        return $this->dst . 'Id';
+        if ($this->dstKey) {
+            return $this->dstKey;
+        }
+
+        $this->dstKey = lcfirst(str_replace('_', '', ucwords($this->dst, '_'))) . 'Id';
+        return $this->dstKey;
     }
 }

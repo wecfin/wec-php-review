@@ -16,6 +16,10 @@ class ReviewAdapter
     protected $reviewRepo;
     protected $reviewerRepo;
 
+    protected $reviewTable;
+    protected $reviewerTable;
+    protected $dstKey;
+
     public function __construct(string $dst, DatabaseManager $dmg, string $database = 'default')
     {
         $this->dst = $dst;
