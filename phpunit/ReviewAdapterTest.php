@@ -1,68 +1,72 @@
 <?php
 namespace phpunit\Wec\Review;
 
-use PHPUnit\Framework\TestCase;
-
-use Gap\Database\DatabaseManager;
-use Gap\Database\Connection\Mysql;
-
 use Wec\Review\ReviewAdapter;
 use Wec\Review\Dto\ReviewerDto;
 
-use phpunit\Wec\Review\Mock\InsertSqlBuilderMock;
-
-class ReviewAdapterTest extends TestCase
+class ReviewAdapterTest extends AdapterTestBase
 {
-    protected $isbStub;
-
-    public function testAddReviewer(): void
+    public function testApprove(): void
     {
         $dstId = 'fakeDstId';
-        $reviewer = new ReviewerDto([
-            'employeeId' => 'fakeEmployeeId',
-            'fullName' => 'fakeFullName',
-            'sequence' => 1
-        ]);
+        $employeeId = 'fakeEmployeeId';
+        $message = 'fakeMessage';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewAdapter->addReviewer($dstId, $reviewer);
+        $reviewAdapter->approve($employeeId, $dstId, $message);
 
         $vals = $this->isbStub->getVals();
 
         $this->assertEquals('fakeDstId', $vals['orderId']);
         $this->assertEquals('fakeEmployeeId', $vals['employeeId']);
-        $this->assertEquals('fakeFullName', $vals['fullName']);
-        $this->assertEquals(1, $vals['sequence']);
+        $this->assertEquals('fakeMessage', $vals['message']);
     }
 
-    protected function getDmgStub()
+    public function testReject(): void
     {
-        $dmgStub = $this->createMock(DatabaseManager::class);
+        $dstId = 'fakeDstId';
+        $employeeId = 'fakeEmployeeId';
+        $message = 'fakeMessage';
 
-        $dmgStub->method('connect')
-            ->willReturn($this->getCnnStub());
+        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+        $reviewAdapter->approve($employeeId, $dstId, $message);
 
-        return $dmgStub;
+        $vals = $this->isbStub->getVals();
+
+        $this->assertEquals('fakeDstId', $vals['orderId']);
+        $this->assertEquals('fakeEmployeeId', $vals['employeeId']);
+        $this->assertEquals('fakeMessage', $vals['message']);
     }
 
-    protected function getCnnStub()
+    public function testFetchReviewer()
     {
-        $cnnStub = $this->createMock(Mysql::class);
-        $cnnStub->method('insert')
-            ->willReturn($this->getIsbStub());
+        $dstId = 'fakeOrderId';
+        $employeeId = 'fakeEmployeeId';
 
-        return $cnnStub;
+        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+        $reviewer = $reviewAdapter->fetchReviewer($dstId, $employeeId);
+
+        $this->assertEquals(
+            new ReviewerDto([
+                'employeeId' => 'fakeEmployeeId',
+                'fullName' => 'fakeFullName',
+                'sequence' => 1,
+                'created' => 'fakeCreated'
+            ]),
+            $reviewer
+        );
     }
 
-    protected function getIsbStub()
+    /*
+    public function testListReviewer()
     {
-        if ($this->isbStub) {
-            return $this->isbStub;
-        }
+        $dstId = 'fakeDstId';
+        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+        $reviewerSet = $reviewAdapter->listReviewer($dstId);
 
-        $this->isbStub = new InsertSqlBuilderMock();
-        return $this->isbStub;
+        var_dump($reviewerSet);die;
     }
+    */
 }
 
 // https://phpunit.de/manual/current/en/test-doubles.html

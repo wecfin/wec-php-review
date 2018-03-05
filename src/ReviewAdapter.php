@@ -34,10 +34,12 @@ class ReviewAdapter
 
     public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
+        $this->reviewRepo->reject($employeeId, $dstId, $message);
     }
 
     public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
+        $this->reviewRepo->approve($employeeId, $dstId, $message);
     }
 
     public function verify(string $dstId): bool
@@ -51,10 +53,12 @@ class ReviewAdapter
 
     public function listReviewer(string $dstId): DataSet
     {
+        return $this->reviewerRepo->listReviewer($dstId);
     }
 
     public function fetchReviewer(string $dstId, string $employeeId): ReviewerDto
     {
+        return $this->reviewerRepo->fetchReviewer($dstId, $employeeId);
     }
 
     public function listReview(string $dstId): DataSet

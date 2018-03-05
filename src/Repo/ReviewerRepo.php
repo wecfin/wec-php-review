@@ -20,6 +20,36 @@ class ReviewerRepo extends RepoBase
             ->execute();
     }
 
+    public function listReviewer(string $dstId): DataSet
+    {
+        if (!$dstId) {
+            throw new \Exception('dstId cannot be null');
+        }
+
+        $ssb = $this->cnn->select()
+            ->from($this->getTable())
+            ->where($this->getDstKey(), '=', $dstId);
+
+        return $this->dataSet($ssb, ReviewerDto::class);
+    }
+
+    public function fetchReviewer($dstId, $employeeId)
+    {
+        if (!$dstId) {
+            throw \Exception('desId cannot be null');
+        }
+
+        if (!$employeeId) {
+            throw \Exception('employeeId cannot be null');
+        }
+
+        return $this->cnn->select()
+            ->from($this->getTable())
+            ->where($this->getDstKey(), '=', $dstId)
+            ->andWhere('employeeId', '=', $employeeId)
+            ->fetch(ReviewerDto::class);
+    }
+
     protected function getTable(): string
     {
         return $this->dst . '_reviewer';
