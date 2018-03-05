@@ -56,17 +56,6 @@ class ReviewAdapterTest extends AdapterTestBase
             $reviewer
         );
     }
-
-    /*
-    public function testListReviewer()
-    {
-        $dstId = 'fakeDstId';
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewerSet = $reviewAdapter->listReviewer($dstId);
-
-        var_dump($reviewerSet);die;
-    }
-    */
 }
 
 // https://phpunit.de/manual/current/en/test-doubles.html
