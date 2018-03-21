@@ -2,51 +2,68 @@
 namespace Wec\Review\Repo;
 
 use Wec\Review\Dto\ReviewerDto;
+use Gap\Dto\DateTime;
+use Gap\Db\MySql\Collection;
 
 class ReviewerRepo extends RepoBase
 {
     public function addReviewer(string $dstId, ReviewerDto $reviewer): void
     {
-        if (empty($reviewer->created)) {
-            $reviewer->created = date(\DateTime::ATOM); // todo need test
-        }
+        $reviewer->created = new DateTime();
 
-        $this->cnn->insert($this->getTable())
-            ->value($this->getDstKey(), $dstId)
-            ->value('employeeId', $reviewer->employeeId)
-            ->value('fullName', $reviewer->fullName)
-            ->value('sequence', $reviewer->sequence)
-            ->value('created', $reviewer->created)
+        $this->cnn->isb()
+            ->insert($this->getTable())
+            ->field(
+                $this->getDstKey(),
+                'employeeId',
+                'fullName',
+                'sequence',
+                'created'
+            )
+            ->value()
+                ->addStr($dstId)
+                ->addStr($reviewer->employeeId)
+                ->addStr($reviewer->fullName)
+                ->addStr($reviewer->sequence)
+                ->addDateTime($reviewer->created)
+            ->end()
             ->execute();
     }
 
-    public function listReviewer(string $dstId): DataSet
+    public function listReviewer(string $dstId): Collection
     {
         if (!$dstId) {
             throw new \Exception('dstId cannot be null');
         }
 
-        $ssb = $this->cnn->select()
+        return $this->cnn->ssb()
+            ->select('*')
             ->from($this->getTable())
-            ->where($this->getDstKey(), '=', $dstId);
-
-        return $this->dataSet($ssb, ReviewerDto::class);
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->list(ReviewerDto::class);
     }
 
     public function fetchReviewer($dstId, $employeeId)
     {
         if (!$dstId) {
-            throw \Exception('desId cannot be null');
+            throw \Exception('dstId cannot be null');
         }
 
         if (!$employeeId) {
             throw \Exception('employeeId cannot be null');
         }
 
-        return $this->cnn->select()
+        return $this->cnn->ssb()
+            ->select('*')
             ->from($this->getTable())
-            ->where($this->getDstKey(), '=', $dstId)
-            ->andWhere('employeeId', '=', $employeeId)
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+                ->andExpect('employeeId')->equal()->str($employeeId)
+            ->end()
             ->fetch(ReviewerDto::class);
     }
 

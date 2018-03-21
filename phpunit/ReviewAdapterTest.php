@@ -8,52 +8,61 @@ class ReviewAdapterTest extends AdapterTestBase
 {
     public function testApprove(): void
     {
+        $this->initParamIndex();
         $dstId = 'fakeDstId';
         $employeeId = 'fakeEmployeeId';
         $message = 'fakeMessage';
+        $type = 'order';
 
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+        $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
         $reviewAdapter->approve($employeeId, $dstId, $message);
 
-        $vals = $this->isbStub->getVals();
+        $executed = $this->getCnn()->executed();
+        $stmt = $executed[0];
+        
+        $sql = $stmt->sql();
+        $vals = $stmt->vals();
+        
+        $this->assertEquals(
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6)',
+            $sql
+        );
 
-        $this->assertEquals('fakeDstId', $vals['orderId']);
-        $this->assertEquals('fakeEmployeeId', $vals['employeeId']);
-        $this->assertEquals('fakeMessage', $vals['message']);
+        unset($vals[':k1']);
+        unset($vals[':k6']);
+        $this->assertEquals(
+            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'approved'],
+            $vals
+        );
     }
 
     public function testReject(): void
     {
+        $this->initParamIndex();
         $dstId = 'fakeDstId';
         $employeeId = 'fakeEmployeeId';
         $message = 'fakeMessage';
+        $type = 'order';
 
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewAdapter->approve($employeeId, $dstId, $message);
+        $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
+        $reviewAdapter->reject($employeeId, $dstId, $message);
 
-        $vals = $this->isbStub->getVals();
-
-        $this->assertEquals('fakeDstId', $vals['orderId']);
-        $this->assertEquals('fakeEmployeeId', $vals['employeeId']);
-        $this->assertEquals('fakeMessage', $vals['message']);
-    }
-
-    public function testFetchReviewer()
-    {
-        $dstId = 'fakeOrderId';
-        $employeeId = 'fakeEmployeeId';
-
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewer = $reviewAdapter->fetchReviewer($dstId, $employeeId);
+        $executed = $this->getCnn()->executed();
+        $stmt = $executed[0];
+        
+        $sql = $stmt->sql();
+        $vals = $stmt->vals();
 
         $this->assertEquals(
-            new ReviewerDto([
-                'employeeId' => 'fakeEmployeeId',
-                'fullName' => 'fakeFullName',
-                'sequence' => 1,
-                'created' => 'fakeCreated'
-            ]),
-            $reviewer
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6)',
+            $sql
+        );
+
+        unset($vals[':k1']);
+        unset($vals[':k6']);
+        $this->assertEquals(
+            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'rejected'],
+            $vals
         );
     }
 }

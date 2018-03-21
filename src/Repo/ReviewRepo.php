@@ -1,38 +1,47 @@
 <?php
 namespace Wec\Review\Repo;
 
+use Gap\Dto\DateTime;
+
 class ReviewRepo extends RepoBase
 {
-    public function approve(string $employeeId, string $dstId, string $massage = ''): void
+    public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
-        $created = date(\DateTime::ATOM);
-
-        $this->cnn->insert($this->getTable())
-            ->value('reviewId', '1-' . uniqid())
-            ->value($this->getDstKey(), $dstId)
-            ->value('employeeId', $employeeId)
-            ->value('message', $massage)
-            ->value('result', 'approved')
-            ->value('created', $created)
-            ->execute();
+        $this->createReviewRecord($employeeId, $dstId, $message, 'approved');
     }
 
-    public function reject(string $employeeId, string $dstId, string $massage = ''): void
+    public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
-        $created = date(\DateTime::ATOM);
-
-        $this->cnn->insert($this->getTable())
-            ->value('reviewId', '1-' . uniqid())
-            ->value($this->getDstKey(), $dstId)
-            ->value('employeeId', $employeeId)
-            ->value('message', $massage)
-            ->value('result', 'rejected')
-            ->value('created', $created)
-            ->execute();
+        $this->createReviewRecord($employeeId, $dstId, $message, 'rejected');
     }
 
     protected function getTable(): string
     {
         return lcfirst(str_replace('_', '', ucwords($this->dst, '_'))) . '_review';
+    }
+
+    protected function createReviewRecord(string $employeeId, string $dstId, string $message, string $result): void
+    {
+        $created = new DateTime();
+
+        $this->cnn->isb()
+            ->insert($this->getTable())
+            ->field(
+                'reviewId',
+                $this->getDstKey(),
+                'employeeId',
+                'message',
+                'result',
+                'created'
+            )
+            ->value()
+                ->addStr($this->cnn->zid())
+                ->addStr($dstId)
+                ->addStr($employeeId)
+                ->addStr($message)
+                ->addStr($result)
+                ->addDateTime($created)
+            ->end()
+            ->execute();
     }
 }

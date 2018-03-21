@@ -1,7 +1,7 @@
 <?php
 namespace Wec\Review\Repo;
 
-use Gap\Database\DatabaseManager;
+use Gap\Db\DbManager;
 
 class RepoBase
 {
@@ -10,7 +10,7 @@ class RepoBase
 
     protected $dstKey;
 
-    public function __construct(DatabaseManager $dmg, string $database = 'default')
+    public function __construct(DbManager $dmg, string $database = 'default')
     {
         $this->cnn = $dmg->connect($database);
         if (empty($this->cnn)) {

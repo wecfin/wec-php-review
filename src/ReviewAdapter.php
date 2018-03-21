@@ -1,8 +1,8 @@
 <?php
 namespace Wec\Review;
 
-use Gap\Database\DatabaseManager;
-use Gap\Database\DataSet;
+use Gap\Db\DbManager;
+use Gap\Db\MySql\Collection;
 
 use Wec\Review\Repo\ReviewRepo;
 use Wec\Review\Repo\ReviewerRepo;
@@ -20,7 +20,7 @@ class ReviewAdapter
     protected $reviewerTable;
     protected $dstKey;
 
-    public function __construct(string $dst, DatabaseManager $dmg, string $database = 'default')
+    public function __construct(string $dst, DbManager $dmg, string $database = 'default')
     {
         $this->dst = $dst;
         $this->dmg = $dmg;
@@ -51,17 +51,17 @@ class ReviewAdapter
         $this->reviewerRepo->addReviewer($dstId, $reviewer);
     }
 
-    public function listReviewer(string $dstId): DataSet
+    public function listReviewer(string $dstId): Collection
     {
         return $this->reviewerRepo->listReviewer($dstId);
     }
 
-    public function fetchReviewer(string $dstId, string $employeeId): ReviewerDto
+    public function fetchReviewer(string $dstId, string $employeeId): ?ReviewerDto
     {
         return $this->reviewerRepo->fetchReviewer($dstId, $employeeId);
     }
 
-    public function listReview(string $dstId): DataSet
+    public function listReview(string $dstId): Collection
     {
     }
 
