@@ -3,12 +3,8 @@ namespace phpunit\Wec\Review;
 
 use PHPUnit\Framework\TestCase;
 use Gap\Db\Pdo\Param\ParamBase;
-
 use Gap\Db\DbManager;
 use Gap\Db\MySql\Cnn;
-
-// use phpunit\Wec\Review\Mock\InsertSqlBuilderMock;
-// use phpunit\Wec\Review\Mock\SelectSqlBuilderMock;
 
 class AdapterTestBase extends TestCase
 {
@@ -53,27 +49,6 @@ class AdapterTestBase extends TestCase
 
         return $cnnStub;
     }
-
-    // protected function getIsbStub()
-    // {
-    //     if ($this->isbStub) {
-    //         return $this->isbStub;
-    //     }
-
-    //     $this->isbStub = new InsertSqlBuilderMock();
-    //     return $this->isbStub;
-    // }
-
-    // protected function getSsbStub()
-    // {
-    //     if ($this->ssbStub) {
-    //         return $this->ssbStub;
-    //     }
-
-    //     $this->ssbStub = new SelectSqlBuilderMock();
-    //     return $this->ssbStub;
-    // }
-
 
      /**
      * @SuppressWarnings(PHPMD)
