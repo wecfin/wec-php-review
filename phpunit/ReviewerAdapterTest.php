@@ -85,7 +85,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
         
         $this->assertEquals(
-            'SELECT * FROM order_reviewer WHERE orderId = :k1 LIMIT 10',
+            'SELECT * FROM order_reviewer WHERE orderId = :k1 ORDER BY sequence ASC LIMIT 10',
             $sql
         );
 
