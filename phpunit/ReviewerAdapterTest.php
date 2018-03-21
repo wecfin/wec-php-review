@@ -42,7 +42,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         );
     }
 
-    public function testFetchReviewer()
+    public function testFetchReviewer(): void
     {
         $this->initParamIndex();
         

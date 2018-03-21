@@ -46,7 +46,7 @@ class ReviewerRepo extends RepoBase
             ->list(ReviewerDto::class);
     }
 
-    public function fetchReviewer($dstId, $employeeId)
+    public function fetchReviewer($dstId, $employeeId): ? ReviewerDto
     {
         if (!$dstId) {
             throw \Exception('dstId cannot be null');
