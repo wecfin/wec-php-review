@@ -63,9 +63,11 @@ class ReviewAdapter
 
     public function listReview(string $dstId): Collection
     {
+        return $this->reviewRepo->listReview($dstId);
     }
 
-    public function fetchReview(string $reviewId): ReviewDto
+    public function fetchReview(string $reviewId): ? ReviewDto
     {
+        return $this->reviewRepo->fetchReview($reviewId);
     }
 }

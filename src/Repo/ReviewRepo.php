@@ -2,6 +2,8 @@
 namespace Wec\Review\Repo;
 
 use Gap\Dto\DateTime;
+use Wec\Review\Dto\ReviewDto;
+use Gap\Db\MySql\Collection;
 
 class ReviewRepo extends RepoBase
 {
@@ -43,5 +45,38 @@ class ReviewRepo extends RepoBase
                 ->addDateTime($created)
             ->end()
             ->execute();
+    }
+
+    public function fetchReview(string $reviewId): ? ReviewDto
+    {
+        if (!$reviewId) {
+            throw \Exception('reviewId cannot be null');
+        }
+
+        return $this->cnn->ssb()
+            ->select('*')
+            ->from($this->getTable())
+            ->end()
+            ->where()
+                ->expect('reviewId')->equal()->str($reviewId)
+            ->end()
+            ->fetch(ReviewDto::class);
+    }
+
+    public function listReview(string $dstId): Collection
+    {
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
+        }
+
+        return $this->cnn->ssb()
+            ->select('*')
+            ->from($this->getTable())
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->ascOrderBy('created')
+            ->list(ReviewDto::class);
     }
 }
