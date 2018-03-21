@@ -67,4 +67,31 @@ class ReviewerAdapterTest extends AdapterTestBase
             $vals
         );
     }
+
+    public function testListReviewer(): void
+    {
+        $this->initParamIndex();
+        
+        $dstId = 'fakeOrderId';
+
+        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+        $reviewerList = $reviewAdapter->listReviewer($dstId);
+        $reviewerList->rewind();
+
+        $executed = $this->getCnn()->executed();
+        $stmt = $executed[0];
+        
+        $sql = $stmt->sql();
+        $vals = $stmt->vals();
+        
+        $this->assertEquals(
+            'SELECT * FROM order_reviewer WHERE orderId = :k1 LIMIT 10',
+            $sql
+        );
+
+        $this->assertEquals(
+            [':k1' => $dstId],
+            $vals
+        );
+    }
 }
