@@ -32,4 +32,9 @@ class RepoBase
         $this->dstKey = lcfirst(str_replace('_', '', ucwords($this->dst, '_'))) . 'Id';
         return $this->dstKey;
     }
+
+    protected function getDst(): string
+    {
+        return $this->dst;
+    }
 }

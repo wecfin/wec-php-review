@@ -70,4 +70,14 @@ class ReviewAdapter
     {
         return $this->reviewRepo->fetchReview($reviewId);
     }
+
+    public function emptyReviewer(string $dstId): void
+    {
+        $this->reviewerRepo->emptyReviewer($dstId);
+    }
+
+    public function addReviewerList(string $dstId, array $reviewerList): void
+    {
+        $this->reviewerRepo->addReviewerList($dstId, $reviewerList);
+    }
 }

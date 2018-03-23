@@ -47,7 +47,7 @@ class ReviewerRepo extends RepoBase
             ->list(ReviewerDto::class);
     }
 
-    public function fetchReviewer($dstId, $employeeId): ? ReviewerDto
+    public function fetchReviewer(string $dstId, string $employeeId): ? ReviewerDto
     {
         if (!$dstId) {
             throw \Exception('dstId cannot be null');
@@ -66,6 +66,31 @@ class ReviewerRepo extends RepoBase
                 ->andExpect('employeeId')->equal()->str($employeeId)
             ->end()
             ->fetch(ReviewerDto::class);
+    }
+
+    public function emptyReviewer(string $dstId): void
+    {
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
+        }
+
+        $this->cnn->dsb()
+            ->delete('*')
+            ->from($this->getTable())
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->execute();
+    }
+
+    public function addReviewerList(string $dstId, array $reviewerList): void
+    {
+        $this->emptyReviewer($dstId);
+        
+        foreach ($reviewerList as $reviewer) {
+            $this->addReviewer($dstId, $reviewer);
+        }
     }
 
     protected function getTable(): string
