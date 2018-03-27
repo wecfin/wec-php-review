@@ -36,13 +36,20 @@ class ReviewAdapter
         $this->reviewFlowRepo->setDst($this->dst);
     }
 
-    public function reject(string $employeeId, string $dstId, string $message = '', $flow): void
+    public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
+        $flow = $this->fetchCurrentReviewFlow($dstId);
+
         $this->reviewRepo->reject($employeeId, $dstId, $message, $flow);
+        
+        $flow++;
+        $this->createReviewFlow($dstId, $flow);
     }
 
-    public function approve(string $employeeId, string $dstId, string $message = '', $flow): void
+    public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
+        $flow = $this->fetchCurrentReviewFlow($dstId);
+
         $this->reviewRepo->approve($employeeId, $dstId, $message, $flow);
     }
 

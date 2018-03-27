@@ -19,20 +19,20 @@ class ReviewAdapterTest extends AdapterTestBase
         $reviewAdapter->approve($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
-        $stmt = $executed[0];
-        
+        $stmt = $executed[1];
+       
         $sql = $stmt->sql();
         $vals = $stmt->vals();
-        
+
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6, :k7)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k3, :k4, :k5, :k6, :k7, :k8, :k9)',
             $sql
         );
 
-        unset($vals[':k1']);
-        unset($vals[':k7']);
+        unset($vals[':k3']);
+        unset($vals[':k9']);
         $this->assertEquals(
-            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'approved', ':k6' => $flow],
+            [':k4' => $dstId, ':k5' => $employeeId, ':k6' => $message, ':k7' => 'approved', ':k8' => $flow],
             $vals
         );
     }
@@ -50,20 +50,21 @@ class ReviewAdapterTest extends AdapterTestBase
         $reviewAdapter->reject($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
-        $stmt = $executed[0];
+        $stmt = $executed[1];
         
         $sql = $stmt->sql();
+        
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6, :k7)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k3, :k4, :k5, :k6, :k7, :k8, :k9)',
             $sql
         );
 
-        unset($vals[':k1']);
-        unset($vals[':k7']);
+        unset($vals[':k3']);
+        unset($vals[':k9']);
         $this->assertEquals(
-            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'rejected', ':k6' => $flow],
+            [':k4' => $dstId, ':k5' => $employeeId, ':k6' => $message, ':k7' => 'rejected', ':k8' => $flow],
             $vals
         );
     }
