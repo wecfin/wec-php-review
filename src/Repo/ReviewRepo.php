@@ -7,16 +7,13 @@ use Gap\Db\MySql\Collection;
 
 class ReviewRepo extends RepoBase
 {
-    public function approve(string $employeeId, string $dstId, string $message = ''): void
+    public function approve(string $employeeId, string $dstId, string $message = '', int $flow): void
     {
-        $flow = 1;
         $this->createReviewRecord($employeeId, $dstId, $message, 'approved', $flow);
     }
 
-    public function reject(string $employeeId, string $dstId, string $message = ''): void
-    {
-        $flow = 1;
-        
+    public function reject(string $employeeId, string $dstId, string $message = '', int $flow): void
+    {   
         $this->createReviewRecord($employeeId, $dstId, $message, 'rejected', $flow);
     }
 
