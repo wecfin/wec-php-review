@@ -12,10 +12,11 @@ class ReviewAdapterTest extends AdapterTestBase
         $dstId = 'fakeDstId';
         $employeeId = 'fakeEmployeeId';
         $message = 'fakeMessage';
+        $flow = 1;
         $type = 'order';
 
         $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
-        $reviewAdapter->approve($employeeId, $dstId, $message);
+        $reviewAdapter->approve($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
         $stmt = $executed[0];
@@ -24,14 +25,14 @@ class ReviewAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
         
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6, :k7)',
             $sql
         );
 
         unset($vals[':k1']);
-        unset($vals[':k6']);
+        unset($vals[':k7']);
         $this->assertEquals(
-            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'approved'],
+            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'approved', ':k6' => $flow],
             $vals
         );
     }
@@ -42,10 +43,11 @@ class ReviewAdapterTest extends AdapterTestBase
         $dstId = 'fakeDstId';
         $employeeId = 'fakeEmployeeId';
         $message = 'fakeMessage';
+        $flow = 1;
         $type = 'order';
 
         $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
-        $reviewAdapter->reject($employeeId, $dstId, $message);
+        $reviewAdapter->reject($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
         $stmt = $executed[0];
@@ -54,14 +56,14 @@ class ReviewAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k1, :k2, :k3, :k4, :k5, :k6, :k7)',
             $sql
         );
 
         unset($vals[':k1']);
-        unset($vals[':k6']);
+        unset($vals[':k7']);
         $this->assertEquals(
-            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'rejected'],
+            [':k2' => $dstId, ':k3' => $employeeId, ':k4' => $message, ':k5' => 'rejected', ':k6' => $flow],
             $vals
         );
     }

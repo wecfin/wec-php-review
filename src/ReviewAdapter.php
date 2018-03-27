@@ -5,9 +5,11 @@ use Gap\Db\DbManager;
 use Gap\Db\MySql\Collection;
 
 use Wec\Review\Repo\ReviewRepo;
+use Wec\Review\Repo\ReviewFlowRepo;
 use Wec\Review\Repo\ReviewerRepo;
 use Wec\Review\Dto\ReviewDto;
 use Wec\Review\Dto\ReviewerDto;
+use Wec\Review\Dto\ReviewFlowDto;
 
 class ReviewAdapter
 {
@@ -27,19 +29,21 @@ class ReviewAdapter
 
         $this->reviewRepo = new ReviewRepo($this->dmg, $database);
         $this->reviewerRepo = new ReviewerRepo($this->dmg, $database);
+        $this->reviewFlowRepo = new ReviewFlowRepo($this->dmg, $database);
 
         $this->reviewRepo->setDst($this->dst);
         $this->reviewerRepo->setDst($this->dst);
+        $this->reviewFlowRepo->setDst($this->dst);
     }
 
-    public function reject(string $employeeId, string $dstId, string $message = ''): void
+    public function reject(string $employeeId, string $dstId, string $message = '', $flow): void
     {
-        $this->reviewRepo->reject($employeeId, $dstId, $message);
+        $this->reviewRepo->reject($employeeId, $dstId, $message, $flow);
     }
 
-    public function approve(string $employeeId, string $dstId, string $message = ''): void
+    public function approve(string $employeeId, string $dstId, string $message = '', $flow): void
     {
-        $this->reviewRepo->approve($employeeId, $dstId, $message);
+        $this->reviewRepo->approve($employeeId, $dstId, $message, $flow);
     }
 
     public function verify(string $dstId): bool
@@ -79,5 +83,15 @@ class ReviewAdapter
     public function addReviewerList(string $dstId, array $reviewerList): void
     {
         $this->reviewerRepo->addReviewerList($dstId, $reviewerList);
+    }
+    
+    public function fetchCurrentReviewFlow(string $dstId): int
+    {
+        return $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
+    }
+
+    public function createReviewFlow(string $dstId, int $flow): ? ReviewFlowDto
+    {
+        return $this->reviewFlowRepo->createReviewFlow($dstId, $flow);
     }
 }

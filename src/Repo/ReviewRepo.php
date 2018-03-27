@@ -9,12 +9,15 @@ class ReviewRepo extends RepoBase
 {
     public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
-        $this->createReviewRecord($employeeId, $dstId, $message, 'approved');
+        $flow = 1;
+        $this->createReviewRecord($employeeId, $dstId, $message, 'approved', $flow);
     }
 
     public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
-        $this->createReviewRecord($employeeId, $dstId, $message, 'rejected');
+        $flow = 1;
+        
+        $this->createReviewRecord($employeeId, $dstId, $message, 'rejected', $flow);
     }
 
     protected function getTable(): string
@@ -22,7 +25,7 @@ class ReviewRepo extends RepoBase
         return lcfirst(str_replace('_', '', ucwords($this->dst, '_'))) . '_review';
     }
 
-    protected function createReviewRecord(string $employeeId, string $dstId, string $message, string $result): void
+    protected function createReviewRecord(string $employeeId, string $dstId, string $message, string $result, int $flow): void
     {
         $created = new DateTime();
 
@@ -34,6 +37,7 @@ class ReviewRepo extends RepoBase
                 'employeeId',
                 'message',
                 'result',
+                'flow',
                 'created'
             )
             ->value()
@@ -42,6 +46,7 @@ class ReviewRepo extends RepoBase
                 ->addStr($employeeId)
                 ->addStr($message)
                 ->addStr($result)
+                ->addInt($flow)
                 ->addDateTime($created)
             ->end()
             ->execute();
