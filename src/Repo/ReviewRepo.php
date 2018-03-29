@@ -75,8 +75,8 @@ class ReviewRepo extends RepoBase
 
     public function fetchPreReview(string $dstId, string $employeeId, int $flow): ? ReviewDto
     {
-        if (!$reviewId) {
-            throw \Exception('reviewId cannot be null');
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
         }
 
         if (!$employeeId) {

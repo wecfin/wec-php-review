@@ -12,7 +12,7 @@ class ReviewerRepo extends RepoBase
         $this->initParamIndex();
         $reviewer->created = new DateTime();
 
-        $ssb = $this->cnn->isb()
+        $this->cnn->isb()
             ->insert($this->getTable())
             ->field(
                 $this->getDstKey(),

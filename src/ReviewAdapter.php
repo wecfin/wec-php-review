@@ -39,7 +39,7 @@ class ReviewAdapter
     public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
         $flow = $this->fetchCurrentReviewFlow($dstId);
-
+        $this->verifyReview($employeeId, $dstId, $flow);
         $this->reviewRepo->reject($employeeId, $dstId, $message, $flow);
         
         $flow++;
@@ -49,12 +49,40 @@ class ReviewAdapter
     public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
         $flow = $this->fetchCurrentReviewFlow($dstId);
+        $this->verifyReview($employeeId, $dstId, $flow);
 
         $this->reviewRepo->approve($employeeId, $dstId, $message, $flow);
     }
 
-    public function verify(string $dstId): bool
+    protected function verifyReview(string $employeeId, string $dstId, int $flow)
     {
+        $this->verifyIsLegalReviewer($employeeId, $dstId, $flow);
+    }
+
+    protected function verifyIsLegalReviewer(string $employeeId, string $dstId, int $flow)
+    {
+        $reviewer = $this->reviewerRepo->fetchReviewer($dstId, $employeeId);
+
+        if (!$reviewer) {
+            throw new \Exception('you are not in reviewerList');
+        }
+
+        $sequence = $reviewer->sequence;
+
+        $preReviewer = $this->reviewerRepo->fetchPreReviewer($dstId, $sequence);
+        $latestReview = $this->reviewRepo->fetchLastestReview($dstId);
+
+        if ($preReviewer) {
+            $preEmployeeId = $preReviewer->employeeId;
+            
+            if (!$latestReview || $latestReview->employeeId !== $preEmployeeId || $latestReview->result != 'approved') {
+                throw new \Exception('you havent authorized to review yet');
+            }
+        }
+
+        if (!$preReviewer && $flow != 1 && $latestReview->result != 'rejected') {
+            throw new \Exception('you havent authorized to review yet');
+        }
     }
 
     public function addReviewer(string $dstId, ReviewerDto $reviewer): void
@@ -82,7 +110,7 @@ class ReviewAdapter
         return $this->reviewRepo->fetchReview($reviewId);
     }
 
-    public function emptyReviewer(string $dstId): void
+    protected function emptyReviewer(string $dstId): void
     {
         $this->reviewerRepo->emptyReviewer($dstId);
     }
@@ -92,12 +120,12 @@ class ReviewAdapter
         $this->reviewerRepo->addReviewerList($dstId, $reviewerList);
     }
     
-    public function fetchCurrentReviewFlow(string $dstId): int
+    protected function fetchCurrentReviewFlow(string $dstId): int
     {
         return $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
     }
 
-    public function createReviewFlow(string $dstId, int $flow): ? ReviewFlowDto
+    protected function createReviewFlow(string $dstId, int $flow): ? ReviewFlowDto
     {
         return $this->reviewFlowRepo->createReviewFlow($dstId, $flow);
     }
