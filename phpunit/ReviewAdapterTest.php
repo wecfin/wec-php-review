@@ -19,20 +19,20 @@ class ReviewAdapterTest extends AdapterTestBase
         $reviewAdapter->approve($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
-        $stmt = $executed[1];
-       
+        $stmt = $executed[2];
+
         $sql = $stmt->sql();
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k3, :k4, :k5, :k6, :k7, :k8, :k9)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k6, :k7, :k8, :k9, :k10, :k11, :k12)',
             $sql
         );
 
-        unset($vals[':k3']);
-        unset($vals[':k9']);
+        unset($vals[':k6']);
+        unset($vals[':k12']);
         $this->assertEquals(
-            [':k4' => $dstId, ':k5' => $employeeId, ':k6' => $message, ':k7' => 'approved', ':k8' => $flow],
+            [':k7' => $dstId, ':k8' => $employeeId, ':k9' => $message, ':k10' => 'approved', ':k11' => $flow],
             $vals
         );
     }
@@ -50,21 +50,20 @@ class ReviewAdapterTest extends AdapterTestBase
         $reviewAdapter->reject($employeeId, $dstId, $message, $flow);
 
         $executed = $this->getCnn()->executed();
-        $stmt = $executed[1];
-        
-        $sql = $stmt->sql();
-        
-        $vals = $stmt->vals();
+        $stmt = $executed[2];
 
+        $sql = $stmt->sql();
+
+        $vals = $stmt->vals();
         $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k3, :k4, :k5, :k6, :k7, :k8, :k9)',
+            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k6, :k7, :k8, :k9, :k10, :k11, :k12)',
             $sql
         );
 
-        unset($vals[':k3']);
-        unset($vals[':k9']);
+        unset($vals[':k6']);
+        unset($vals[':k12']);
         $this->assertEquals(
-            [':k4' => $dstId, ':k5' => $employeeId, ':k6' => $message, ':k7' => 'rejected', ':k8' => $flow],
+            [':k7' => $dstId, ':k8' => $employeeId, ':k9' => $message, ':k10' => 'rejected', ':k11' => $flow],
             $vals
         );
     }
@@ -72,7 +71,7 @@ class ReviewAdapterTest extends AdapterTestBase
     public function testFetchReview(): void
     {
         $this->initParamIndex();
-        
+
         $reviewId = 'fakeReviewId';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
@@ -84,7 +83,7 @@ class ReviewAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'SELECT * FROM order_review WHERE reviewId = :k1 LIMIT 10',
+            'SELECT t.reviewId, t.employeeId, t.result, t.message, t.flow, t.created FROM order_review t WHERE reviewId = :k1 LIMIT 10',
             $sql
         );
 
@@ -97,7 +96,7 @@ class ReviewAdapterTest extends AdapterTestBase
     public function testListReview(): void
     {
         $this->initParamIndex();
-        
+
         $dstId = 'fakeOrderId';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
@@ -110,7 +109,7 @@ class ReviewAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'SELECT * FROM order_review WHERE orderId = :k1 ORDER BY created ASC LIMIT 10',
+            'SELECT t.reviewId, t.employeeId, t.result, t.message, t.flow, t.created FROM order_review t WHERE orderId = :k1 ORDER BY created ASC LIMIT 10',
             $sql
         );
 

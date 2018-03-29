@@ -9,7 +9,7 @@ class ReviewerAdapterTest extends AdapterTestBase
     public function testAddReviewer(): void
     {
         $this->initParamIndex();
-        
+
         $dstId = 'fakeDstId';
         $employeeId = 'fakeEmployeeId';
         $fullName = 'fakeFullName';
@@ -23,13 +23,13 @@ class ReviewerAdapterTest extends AdapterTestBase
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
         $reviewAdapter->addReviewer($dstId, $reviewer);
-        
+
         $executed = $this->getCnn()->executed();
         $stmt = $executed[0];
-        
+
         $sql = $stmt->sql();
         $vals = $stmt->vals();
-        
+
         $this->assertEquals(
             'INSERT INTO order_reviewer (orderId, employeeId, fullName, sequence, created) VALUES (:k1, :k2, :k3, :k4, :k5)',
             $sql
@@ -45,7 +45,7 @@ class ReviewerAdapterTest extends AdapterTestBase
     public function testFetchReviewer(): void
     {
         $this->initParamIndex();
-        
+
         $dstId = 'fakeOrderId';
         $employeeId = 'fakeEmployeeId';
 
@@ -58,7 +58,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'SELECT * FROM order_reviewer WHERE orderId = :k1 AND employeeId = :k2 LIMIT 10',
+            'SELECT t.employeeId, t.fullName, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 AND employeeId = :k2 LIMIT 10',
             $sql
         );
 
@@ -71,7 +71,7 @@ class ReviewerAdapterTest extends AdapterTestBase
     public function testListReviewer(): void
     {
         $this->initParamIndex();
-        
+
         $dstId = 'fakeOrderId';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
@@ -80,12 +80,12 @@ class ReviewerAdapterTest extends AdapterTestBase
 
         $executed = $this->getCnn()->executed();
         $stmt = $executed[0];
-        
+
         $sql = $stmt->sql();
         $vals = $stmt->vals();
-        
+
         $this->assertEquals(
-            'SELECT * FROM order_reviewer WHERE orderId = :k1 ORDER BY sequence ASC LIMIT 10',
+            'SELECT t.employeeId, t.fullName, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 ORDER BY sequence ASC LIMIT 10',
             $sql
         );
 
@@ -98,7 +98,7 @@ class ReviewerAdapterTest extends AdapterTestBase
     public function testEmptyReviewer(): void
     {
         $this->initParamIndex();
-        
+
         $dstId = 'fakeOrderId';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
@@ -110,7 +110,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'DELETE * FROM order_reviewer WHERE orderId = :k1',
+            'DELETE order_reviewer FROM order_reviewer WHERE orderId = :k1',
             $sql
         );
 

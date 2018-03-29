@@ -13,6 +13,7 @@ class ReviewFlowRepo extends RepoBase
             throw new \Exception('dstId cannot be null');
         }
 
+        $this->initParamIndex();
         $reviewFlow = $this->cnn->ssb()
             ->select('*')
             ->from($this->getTable())
@@ -29,14 +30,16 @@ class ReviewFlowRepo extends RepoBase
             return $reviewFlow->flow;
         }
 
-        return 1;
+        $flow = 1;
+        $this->createReviewFlow($dstId, $flow);
+        return $flow;
     }
 
 
     public function createReviewFlow(string $dstId, int $flow): void
     {
         $created = new DateTime();
-
+        $this->initParamIndex();
         $this->cnn->isb()
             ->insert($this->getTable())
             ->field(

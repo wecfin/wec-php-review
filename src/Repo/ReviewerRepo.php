@@ -9,9 +9,10 @@ class ReviewerRepo extends RepoBase
 {
     public function addReviewer(string $dstId, ReviewerDto $reviewer): void
     {
+        $this->initParamIndex();
         $reviewer->created = new DateTime();
 
-        $this->cnn->isb()
+        $ssb = $this->cnn->isb()
             ->insert($this->getTable())
             ->field(
                 $this->getDstKey(),
@@ -36,9 +37,16 @@ class ReviewerRepo extends RepoBase
             throw new \Exception('dstId cannot be null');
         }
 
+        $table = $this->getTable();
+        $this->initParamIndex();
         return $this->cnn->ssb()
-            ->select('*')
-            ->from($this->getTable())
+            ->select(
+                't.employeeId',
+                't.fullName',
+                't.sequence',
+                't.created'
+            )
+            ->from("$table t")
             ->end()
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
@@ -56,15 +64,52 @@ class ReviewerRepo extends RepoBase
         if (!$employeeId) {
             throw \Exception('employeeId cannot be null');
         }
-
+        $this->initParamIndex();
+        $table = $this->getTable();
         return $this->cnn->ssb()
-            ->select('*')
-            ->from($this->getTable())
+            ->select(
+                't.employeeId',
+                't.fullName',
+                't.sequence',
+                't.created'
+            )
+            ->from("$table t")
             ->end()
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
                 ->andExpect('employeeId')->equal()->str($employeeId)
             ->end()
+            ->fetch(ReviewerDto::class);
+    }
+
+    public function fetchPreReviewer(string $dstId, int $sequence): ? ReviewerDto
+    {
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
+        }
+
+        if (!$sequence) {
+            throw \Exception('sequence cannot be null');
+        }
+
+        $this->initParamIndex();
+        $table = $this->getTable();
+
+        return $this->cnn->ssb()
+            ->select(
+                't.employeeId',
+                't.fullName',
+                't.sequence',
+                't.created'
+            )
+            ->from("$table t")
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+                ->andExpect('sequence')->less()->int($sequence)
+            ->end()
+            ->descOrderBy('sequence')
+            ->limit(1)
             ->fetch(ReviewerDto::class);
     }
 
@@ -74,8 +119,10 @@ class ReviewerRepo extends RepoBase
             throw \Exception('dstId cannot be null');
         }
 
+        $this->initParamIndex();
+
         $this->cnn->dsb()
-            ->delete('*')
+            ->delete($this->getTable())
             ->from($this->getTable())
             ->end()
             ->where()
@@ -87,7 +134,7 @@ class ReviewerRepo extends RepoBase
     public function addReviewerList(string $dstId, array $reviewerList): void
     {
         $this->emptyReviewer($dstId);
-        
+
         foreach ($reviewerList as $reviewer) {
             $this->addReviewer($dstId, $reviewer);
         }
@@ -96,5 +143,30 @@ class ReviewerRepo extends RepoBase
     protected function getTable(): string
     {
         return $this->dst . '_reviewer';
+    }
+
+    public function fetchLastReviewer(string $dstId): ? ReviewerDto
+    {
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
+        }
+
+        $this->initParamIndex();
+        $table = $this->getTable();
+        return $this->cnn->ssb()
+            ->select(
+                't.employeeId',
+                't.fullName',
+                't.sequence',
+                't.created'
+            )
+            ->from("$table t")
+            ->end()
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->descOrderBy('t.sequence')
+            ->limit(1)
+            ->fetch(ReviewerDto::class);
     }
 }

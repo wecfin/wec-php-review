@@ -2,6 +2,7 @@
 namespace Wec\Review\Repo;
 
 use Gap\Db\DbManager;
+use Gap\Db\Pdo\Param\ParamBase;
 
 class RepoBase
 {
@@ -36,5 +37,10 @@ class RepoBase
     protected function getDst(): string
     {
         return $this->dst;
+    }
+
+    protected function initParamIndex(): void
+    {
+        ParamBase::initIndex();
     }
 }
