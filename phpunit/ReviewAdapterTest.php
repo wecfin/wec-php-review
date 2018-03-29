@@ -6,68 +6,6 @@ use Wec\Review\Dto\ReviewerDto;
 
 class ReviewAdapterTest extends AdapterTestBase
 {
-    public function testApprove(): void
-    {
-        $this->initParamIndex();
-        $dstId = 'fakeDstId';
-        $employeeId = 'fakeEmployeeId';
-        $message = 'fakeMessage';
-        $flow = 1;
-        $type = 'order';
-
-        $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
-        $reviewAdapter->approve($employeeId, $dstId, $message, $flow);
-
-        $executed = $this->getCnn()->executed();
-        $stmt = $executed[2];
-
-        $sql = $stmt->sql();
-        $vals = $stmt->vals();
-
-        $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k6, :k7, :k8, :k9, :k10, :k11, :k12)',
-            $sql
-        );
-
-        unset($vals[':k6']);
-        unset($vals[':k12']);
-        $this->assertEquals(
-            [':k7' => $dstId, ':k8' => $employeeId, ':k9' => $message, ':k10' => 'approved', ':k11' => $flow],
-            $vals
-        );
-    }
-
-    public function testReject(): void
-    {
-        $this->initParamIndex();
-        $dstId = 'fakeDstId';
-        $employeeId = 'fakeEmployeeId';
-        $message = 'fakeMessage';
-        $flow = 1;
-        $type = 'order';
-
-        $reviewAdapter = new ReviewAdapter($type, $this->getDmgStub());
-        $reviewAdapter->reject($employeeId, $dstId, $message, $flow);
-
-        $executed = $this->getCnn()->executed();
-        $stmt = $executed[2];
-
-        $sql = $stmt->sql();
-
-        $vals = $stmt->vals();
-        $this->assertEquals(
-            'INSERT INTO order_review (reviewId, orderId, employeeId, message, result, flow, created) VALUES (:k6, :k7, :k8, :k9, :k10, :k11, :k12)',
-            $sql
-        );
-
-        unset($vals[':k6']);
-        unset($vals[':k12']);
-        $this->assertEquals(
-            [':k7' => $dstId, ':k8' => $employeeId, ':k9' => $message, ':k10' => 'rejected', ':k11' => $flow],
-            $vals
-        );
-    }
-
     public function testFetchReview(): void
     {
         $this->initParamIndex();

@@ -13,7 +13,7 @@ class ReviewRepo extends RepoBase
     }
 
     public function reject(string $employeeId, string $dstId, string $message = '', int $flow): void
-    {
+    {      
         $this->createReviewRecord($employeeId, $dstId, $message, 'rejected', $flow);
     }
 
@@ -75,10 +75,10 @@ class ReviewRepo extends RepoBase
 
     public function fetchPreReview(string $dstId, string $employeeId, int $flow): ? ReviewDto
     {
-        if (!$dstId) {
-            throw \Exception('dstId cannot be null');
+        if (!$reviewId) {
+            throw \Exception('reviewId cannot be null');
         }
-
+        
         if (!$employeeId) {
             throw \Exception('employeeId cannot be null');
         }
@@ -112,7 +112,7 @@ class ReviewRepo extends RepoBase
         if (!$dstId) {
             throw \Exception('dstId cannot be null');
         }
-
+        
         $table = $this->getTable();
         return $this->cnn->ssb()
             ->select(

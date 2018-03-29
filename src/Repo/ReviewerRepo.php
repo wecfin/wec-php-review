@@ -9,10 +9,9 @@ class ReviewerRepo extends RepoBase
 {
     public function addReviewer(string $dstId, ReviewerDto $reviewer): void
     {
-        $this->initParamIndex();
         $reviewer->created = new DateTime();
-
-        $this->cnn->isb()
+        
+        $ssb = $this->cnn->isb()
             ->insert($this->getTable())
             ->field(
                 $this->getDstKey(),
@@ -38,7 +37,7 @@ class ReviewerRepo extends RepoBase
         }
 
         $table = $this->getTable();
-        $this->initParamIndex();
+
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
@@ -64,7 +63,7 @@ class ReviewerRepo extends RepoBase
         if (!$employeeId) {
             throw \Exception('employeeId cannot be null');
         }
-        $this->initParamIndex();
+
         $table = $this->getTable();
         return $this->cnn->ssb()
             ->select(
@@ -91,10 +90,9 @@ class ReviewerRepo extends RepoBase
         if (!$sequence) {
             throw \Exception('sequence cannot be null');
         }
-
-        $this->initParamIndex();
+       
         $table = $this->getTable();
-
+        
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
@@ -119,8 +117,6 @@ class ReviewerRepo extends RepoBase
             throw \Exception('dstId cannot be null');
         }
 
-        $this->initParamIndex();
-
         $this->cnn->dsb()
             ->delete($this->getTable())
             ->from($this->getTable())
@@ -134,7 +130,7 @@ class ReviewerRepo extends RepoBase
     public function addReviewerList(string $dstId, array $reviewerList): void
     {
         $this->emptyReviewer($dstId);
-
+        
         foreach ($reviewerList as $reviewer) {
             $this->addReviewer($dstId, $reviewer);
         }
@@ -151,7 +147,6 @@ class ReviewerRepo extends RepoBase
             throw \Exception('dstId cannot be null');
         }
 
-        $this->initParamIndex();
         $table = $this->getTable();
         return $this->cnn->ssb()
             ->select(
