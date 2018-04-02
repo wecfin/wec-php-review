@@ -136,11 +136,6 @@ class ReviewerRepo extends RepoBase
         }
     }
 
-    protected function getTable(): string
-    {
-        return $this->dst . '_reviewer';
-    }
-
     public function fetchLastReviewer(string $dstId): ? ReviewerDto
     {
         if (!$dstId) {
@@ -163,5 +158,10 @@ class ReviewerRepo extends RepoBase
             ->descOrderBy('t.sequence')
             ->limit(1)
             ->fetch(ReviewerDto::class);
+    }
+
+    protected function getTable(): string
+    {
+        return $this->dst . '_reviewer';
     }
 }

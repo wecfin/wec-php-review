@@ -6,42 +6,6 @@ use Wec\Review\Dto\ReviewerDto;
 
 class ReviewerAdapterTest extends AdapterTestBase
 {
-    public function testAddReviewer(): void
-    {
-        $this->initParamIndex();
-
-        $dstId = 'fakeDstId';
-        $employeeId = 'fakeEmployeeId';
-        $fullName = 'fakeFullName';
-        $sequence = 1;
-
-        $reviewer = new ReviewerDto([
-            'employeeId' => $employeeId,
-            'fullName' => $fullName,
-            'sequence' => $sequence
-        ]);
-
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewAdapter->addReviewer($dstId, $reviewer);
-
-        $executed = $this->getCnn()->executed();
-        $stmt = $executed[0];
-
-        $sql = $stmt->sql();
-        $vals = $stmt->vals();
-
-        $this->assertEquals(
-            'INSERT INTO order_reviewer (orderId, employeeId, fullName, sequence, created) VALUES (:k1, :k2, :k3, :k4, :k5)',
-            $sql
-        );
-
-        unset($vals[':k5']);
-        $this->assertEquals(
-            [':k1' => $dstId, ':k2' => $employeeId, ':k3' => $fullName, ':k4' => $sequence],
-            $vals
-        );
-    }
-
     public function testFetchReviewer(): void
     {
         $this->initParamIndex();
@@ -95,28 +59,28 @@ class ReviewerAdapterTest extends AdapterTestBase
         );
     }
 
-    public function testEmptyReviewer(): void
-    {
-        $this->initParamIndex();
+    // public function testEmptyReviewer(): void
+    // {
+    //     $this->initParamIndex();
 
-        $dstId = 'fakeOrderId';
+    //     $dstId = 'fakeOrderId';
 
-        $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewAdapter->emptyReviewer($dstId);
+    //     $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
+    //     $reviewAdapter->emptyReviewer($dstId);
 
-        $executed = $this->getCnn()->executed();
-        $stmt = $executed[0];
-        $sql = $stmt->sql();
-        $vals = $stmt->vals();
+    //     $executed = $this->getCnn()->executed();
+    //     $stmt = $executed[0];
+    //     $sql = $stmt->sql();
+    //     $vals = $stmt->vals();
 
-        $this->assertEquals(
-            'DELETE order_reviewer FROM order_reviewer WHERE orderId = :k1',
-            $sql
-        );
+    //     $this->assertEquals(
+    //         'DELETE order_reviewer FROM order_reviewer WHERE orderId = :k1',
+    //         $sql
+    //     );
 
-        $this->assertEquals(
-            [':k1' => $dstId],
-            $vals
-        );
-    }
+    //     $this->assertEquals(
+    //         [':k1' => $dstId],
+    //         $vals
+    //     );
+    // }
 }

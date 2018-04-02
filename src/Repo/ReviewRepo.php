@@ -4,16 +4,17 @@ namespace Wec\Review\Repo;
 use Gap\Dto\DateTime;
 use Wec\Review\Dto\ReviewDto;
 use Gap\Db\MySql\Collection;
+use Gap\Db\MySql\SqlBuilder\SelectSqlBuilder;
 
 class ReviewRepo extends RepoBase
 {
-    public function approve(string $employeeId, string $dstId, string $message = '', int $flow): void
+    public function approve(string $employeeId, string $dstId, string $message, int $flow): void
     {
         $this->createReviewRecord($employeeId, $dstId, $message, 'approved', $flow);
     }
 
-    public function reject(string $employeeId, string $dstId, string $message = '', int $flow): void
-    {      
+    public function reject(string $employeeId, string $dstId, string $message, int $flow): void
+    {
         $this->createReviewRecord($employeeId, $dstId, $message, 'rejected', $flow);
     }
 
@@ -49,24 +50,15 @@ class ReviewRepo extends RepoBase
             ->execute();
     }
 
-    public function fetchReview(string $reviewId): ? ReviewDto
+    public function fetchReviewByReviewId(string $reviewId): ? ReviewDto
     {
         if (!$reviewId) {
             throw \Exception('reviewId cannot be null');
         }
 
-        $table = $this->getTable();
-        return $this->cnn->ssb()
-            ->select(
-                't.reviewId',
-                't.employeeId',
-                't.result',
-                't.message',
-                't.flow',
-                't.created'
-            )
-            ->from("$table t")
-            ->end()
+        $ssb = $this->getBasicReviewSsb();
+
+        return $ssb
             ->where()
                 ->expect('reviewId')->equal()->str($reviewId)
             ->end()
@@ -87,18 +79,9 @@ class ReviewRepo extends RepoBase
             throw \Exception('flow cannot be null');
         }
 
-        $table = $this->getTable();
-        return $this->cnn->ssb()
-            ->select(
-                't.reviewId',
-                't.employeeId',
-                't.result',
-                't.message',
-                't.flow',
-                't.created'
-            )
-            ->from("$table t")
-            ->end()
+        $ssb = $this->getBasicReviewSsb();
+
+        return $ssb
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
                 ->andExpect('employeeId')->equal()->str($employeeId)
@@ -112,20 +95,10 @@ class ReviewRepo extends RepoBase
         if (!$dstId) {
             throw \Exception('dstId cannot be null');
         }
-        
-        $table = $this->getTable();
-        return $this->cnn->ssb()
-            ->select(
-               't.reviewId',
-               't.employeeId',
-               't.result',
-               't.message',
-               't.flow',
-               't.created'
-            )
-            ->from("$table t")
-            ->end()
-            ->where()
+
+        $ssb = $this->getBasicReviewSsb();
+
+        return $ssb->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
             ->end()
             ->ascOrderBy('created')
@@ -138,8 +111,36 @@ class ReviewRepo extends RepoBase
             throw \Exception('dstId cannot be null');
         }
 
+        $ssb = $this->getBasicReviewSsb();
+
+        return $ssb
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->descOrderBy('t.created')
+            ->limit(1)
+            ->fetch(ReviewDto::class);
+    }
+
+    public function fetchReviewByEmployeeIdInFlow(string $dstId, string $employeeId, int $flow): ? ReviewDto
+    {
+        $ssb = $this->getBasicReviewSsb();
+        
+        return $ssb
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+                ->andExpect('employeeId')->equal()->str($employeeId)
+                ->andExpect('flow')->equal()->int($flow)
+            ->end()
+            ->limit(1)
+            ->fetch(ReviewDto::class);
+    }
+
+    public function getBasicReviewSsb(): SelectSqlBuilder
+    {
         $table = $this->getTable();
-        return $this->cnn->ssb()
+        return $this->cnn
+            ->ssb()
             ->select(
                 't.reviewId',
                 't.employeeId',
@@ -149,12 +150,6 @@ class ReviewRepo extends RepoBase
                 't.created'
             )
             ->from("$table t")
-            ->end()
-            ->where()
-                ->expect($this->getDstKey())->equal()->str($dstId)
-            ->end()
-            ->descOrderBy('t.created')
-            ->limit(1)
-            ->fetch(ReviewDto::class);
+            ->end();
     }
 }

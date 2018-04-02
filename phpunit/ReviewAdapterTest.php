@@ -13,7 +13,7 @@ class ReviewAdapterTest extends AdapterTestBase
         $reviewId = 'fakeReviewId';
 
         $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-        $reviewAdapter->fetchReview($reviewId);
+        $reviewAdapter->fetchReviewByReviewId($reviewId);
 
         $executed = $this->getCnn()->executed();
         $stmt = $executed[0];
