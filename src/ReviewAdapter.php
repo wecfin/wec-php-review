@@ -59,7 +59,6 @@ class ReviewAdapter
         $this->verifyIsLegalReviewer($employeeId, $dstId, $flow);
     }
 
-
     public function verifyIsLegalReviewer(string $employeeId, string $dstId, int $flow)
     {
         $reviewer = $this->reviewerRepo->fetchReviewer($dstId, $employeeId);
@@ -84,6 +83,13 @@ class ReviewAdapter
         if (!$preReviewer && $flow != 1 && $latestReview->result != 'rejected') {
             throw new \Exception('you havent authorized to review yet');
         }
+    }
+
+    public function abandonReview(string $dstId): void
+    {
+        $flow = $this->fetchCurrentReviewFlow($dstId);
+        $flow++;
+        $this->createReviewFlow($dstId, $flow);
     }
 
     public function verify(string $dstId): bool
