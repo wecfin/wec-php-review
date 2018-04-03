@@ -38,7 +38,7 @@ class ReviewAdapter
 
     public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
-        $flow = $this->fetchCurrentReviewFlow($dstId);
+        $flow = $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
         $this->verifyReview($employeeId, $dstId, $flow);
 
         $this->reviewRepo->approve($employeeId, $dstId, $message, $flow);
@@ -46,12 +46,12 @@ class ReviewAdapter
 
     public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
-        $flow = $this->fetchCurrentReviewFlow($dstId);
+        $flow = $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
         $this->verifyReview($employeeId, $dstId, $flow);
         $this->reviewRepo->reject($employeeId, $dstId, $message, $flow);
 
         $flow++;
-        $this->createReviewFlow($dstId, $flow);
+        $this->reviewFlowRepo->createReviewFlow($dstId, $flow);
     }
 
     public function listReviewer(string $dstId): Collection
@@ -71,12 +71,12 @@ class ReviewAdapter
 
     public function abandonReview(string $dstId): void
     {
-        $flow = $this->fetchCurrentReviewFlow($dstId);
+        $flow = $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
         $latestReview = $this->reviewRepo->fetchLastestReview($dstId);
 
         if ($latestReview) {
             $flow++;
-            $this->createReviewFlow($dstId, $flow);
+            $this->reviewFlowRepo->createReviewFlow($dstId, $flow);
         }
     }
 
@@ -93,21 +93,6 @@ class ReviewAdapter
     protected function addReviewer(string $dstId, ReviewerDto $reviewer): void
     {
         $this->reviewerRepo->addReviewer($dstId, $reviewer);
-    }
-
-    protected function fetchCurrentReviewFlow(string $dstId): int
-    {
-        return $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
-    }
-
-    protected function createReviewFlow(string $dstId, int $flow): ? ReviewFlowDto
-    {
-        return $this->reviewFlowRepo->createReviewFlow($dstId, $flow);
-    }
-
-    protected function emptyReviewer(string $dstId): void
-    {
-        $this->reviewerRepo->emptyReviewer($dstId);
     }
 
     protected function verifyReview(string $employeeId, string $dstId, int $flow)

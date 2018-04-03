@@ -58,29 +58,4 @@ class ReviewerAdapterTest extends AdapterTestBase
             $vals
         );
     }
-
-    // public function testEmptyReviewer(): void
-    // {
-    //     $this->initParamIndex();
-
-    //     $dstId = 'fakeOrderId';
-
-    //     $reviewAdapter = new ReviewAdapter('order', $this->getDmgStub());
-    //     $reviewAdapter->emptyReviewer($dstId);
-
-    //     $executed = $this->getCnn()->executed();
-    //     $stmt = $executed[0];
-    //     $sql = $stmt->sql();
-    //     $vals = $stmt->vals();
-
-    //     $this->assertEquals(
-    //         'DELETE order_reviewer FROM order_reviewer WHERE orderId = :k1',
-    //         $sql
-    //     );
-
-    //     $this->assertEquals(
-    //         [':k1' => $dstId],
-    //         $vals
-    //     );
-    // }
 }
