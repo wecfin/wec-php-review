@@ -7,5 +7,6 @@ class ReviewDto extends DtoBase
     public $employeeId;
     public $result;
     public $message;
+    public $flow;
     public $created;
 }

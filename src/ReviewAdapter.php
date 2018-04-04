@@ -10,6 +10,7 @@ use Wec\Review\Repo\ReviewerRepo;
 use Wec\Review\Dto\ReviewDto;
 use Wec\Review\Dto\ReviewerDto;
 use Wec\Review\Dto\ReviewFlowDto;
+use Wec\Review\VerifyReviewAdapter;
 
 class ReviewAdapter
 {
@@ -34,12 +35,14 @@ class ReviewAdapter
         $this->reviewRepo->setDst($this->dst);
         $this->reviewerRepo->setDst($this->dst);
         $this->reviewFlowRepo->setDst($this->dst);
+
+        $this->verifyReviewAdapter = new VerifyReviewAdapter($dst, $dmg, $database);
     }
 
     public function approve(string $employeeId, string $dstId, string $message = ''): void
     {
         $flow = $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
-        $this->verifyReview($employeeId, $dstId, $flow);
+        $this->verifyReviewAdapter->verify($employeeId, $dstId, $flow);
 
         $this->reviewRepo->approve($employeeId, $dstId, $message, $flow);
     }
@@ -47,7 +50,7 @@ class ReviewAdapter
     public function reject(string $employeeId, string $dstId, string $message = ''): void
     {
         $flow = $this->reviewFlowRepo->fetchCurrentReviewFlow($dstId);
-        $this->verifyReview($employeeId, $dstId, $flow);
+        $this->verifyReviewAdapter->verify($employeeId, $dstId, $flow);
         $this->reviewRepo->reject($employeeId, $dstId, $message, $flow);
 
         $flow++;
@@ -93,48 +96,5 @@ class ReviewAdapter
     protected function addReviewer(string $dstId, ReviewerDto $reviewer): void
     {
         $this->reviewerRepo->addReviewer($dstId, $reviewer);
-    }
-
-    protected function verifyReview(string $employeeId, string $dstId, int $flow)
-    {
-        $this->verifyIsLegalReviewer($employeeId, $dstId, $flow);
-    }
-
-    protected function verifyIsLegalReviewer(string $employeeId, string $dstId, int $flow)
-    {
-        $reviewer = $this->reviewerRepo->fetchReviewer($dstId, $employeeId);
-
-        if (!$reviewer) {
-            throw new \Exception('you are not in reviewerList');
-        }
-
-        $this->verifyIsRepeatSubmit($employeeId, $dstId, $flow);
-
-        $sequence = $reviewer->sequence;
-        
-        $this->verifyReviewIsInCorrectSequence($sequence, $dstId, $flow);
-    }
-
-    protected function verifyIsRepeatSubmit(string $employeeId, string $dstId, int $flow): void
-    {
-        $appliedReview = $this->reviewRepo->fetchReviewByEmployeeIdInFlow($dstId, $employeeId, $flow);
-
-        if ($appliedReview) {
-            throw new \Exception('you have already reviewed');
-        }
-    }
-
-    protected function verifyReviewIsInCorrectSequence(string $sequence, string $dstId, int $flow): void
-    {
-        $preReviewer = $this->reviewerRepo->fetchPreReviewer($dstId, $sequence);
-        $latestReview = $this->reviewRepo->fetchLastestReview($dstId);
-
-        if ($preReviewer) {
-            $preEmployeeId = $preReviewer->employeeId;
-
-            if (!$latestReview || $latestReview->employeeId != $preEmployeeId || $latestReview->result != 'approved' || $latestReview->flow != $flow) {
-                throw new \Exception('you havent authorized to review yet');
-            }
-        }
     }
 }
