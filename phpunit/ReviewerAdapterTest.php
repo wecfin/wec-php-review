@@ -22,7 +22,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'SELECT t.employeeId, t.fullName, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 AND employeeId = :k2 LIMIT 10',
+            'SELECT t.employeeId, t.name, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 AND employeeId = :k2 LIMIT 10',
             $sql
         );
 
@@ -49,7 +49,7 @@ class ReviewerAdapterTest extends AdapterTestBase
         $vals = $stmt->vals();
 
         $this->assertEquals(
-            'SELECT t.employeeId, t.fullName, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 ORDER BY sequence ASC LIMIT 10',
+            'SELECT t.employeeId, t.name, t.sequence, t.created FROM order_reviewer t WHERE orderId = :k1 ORDER BY sequence ASC LIMIT 10',
             $sql
         );
 

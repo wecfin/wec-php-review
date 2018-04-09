@@ -16,14 +16,14 @@ class ReviewerRepo extends RepoBase
             ->field(
                 $this->getDstKey(),
                 'employeeId',
-                'fullName',
+                'name',
                 'sequence',
                 'created'
             )
             ->value()
                 ->addStr($dstId)
                 ->addStr($reviewer->employeeId)
-                ->addStr($reviewer->fullName)
+                ->addStr($reviewer->name)
                 ->addStr($reviewer->sequence)
                 ->addDateTime($reviewer->created)
             ->end()
@@ -41,7 +41,7 @@ class ReviewerRepo extends RepoBase
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
-                't.fullName',
+                't.name',
                 't.sequence',
                 't.created'
             )
@@ -68,7 +68,7 @@ class ReviewerRepo extends RepoBase
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
-                't.fullName',
+                't.name',
                 't.sequence',
                 't.created'
             )
@@ -96,7 +96,7 @@ class ReviewerRepo extends RepoBase
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
-                't.fullName',
+                't.name',
                 't.sequence',
                 't.created'
             )
@@ -146,7 +146,7 @@ class ReviewerRepo extends RepoBase
         return $this->cnn->ssb()
             ->select(
                 't.employeeId',
-                't.fullName',
+                't.name',
                 't.sequence',
                 't.created'
             )
