@@ -38,9 +38,8 @@ class ReviewerRepo extends RepoBase
         }
 
         $ssb = $this->getBasicReviewerSsb();
+        
         return $ssb
-            ->from("$table t")
-            ->end()
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
             ->end()
