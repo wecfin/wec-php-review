@@ -67,6 +67,11 @@ class ReviewAdapter
         return $this->reviewRepo->listReview($dstId);
     }
 
+    public function fetchNextReviewer(string $dstId, string $employeeId): ?ReviewerDto
+    {
+        return $this->reviewerRepo->fetchNextReviewer($dstId, $employeeId);
+    }
+
     public function addReviewerList(string $dstId, array $reviewerList): void
     {
         $this->reviewerRepo->addReviewerList($dstId, $reviewerList);

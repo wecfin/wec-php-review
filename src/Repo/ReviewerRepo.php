@@ -4,6 +4,7 @@ namespace Wec\Review\Repo;
 use Wec\Review\Dto\ReviewerDto;
 use Gap\Dto\DateTime;
 use Gap\Db\MySql\Collection;
+use Gap\Db\MySql\SqlBuilder\SelectSqlBuilder;
 
 class ReviewerRepo extends RepoBase
 {
@@ -36,15 +37,8 @@ class ReviewerRepo extends RepoBase
             throw new \Exception('dstId cannot be null');
         }
 
-        $table = $this->getTable();
-
-        return $this->cnn->ssb()
-            ->select(
-                't.employeeId',
-                't.name',
-                't.sequence',
-                't.created'
-            )
+        $ssb = $this->getBasicReviewerSsb();
+        return $ssb
             ->from("$table t")
             ->end()
             ->where()
@@ -64,16 +58,9 @@ class ReviewerRepo extends RepoBase
             throw \Exception('employeeId cannot be null');
         }
 
-        $table = $this->getTable();
-        return $this->cnn->ssb()
-            ->select(
-                't.employeeId',
-                't.name',
-                't.sequence',
-                't.created'
-            )
-            ->from("$table t")
-            ->end()
+        $ssb = $this->getBasicReviewerSsb();
+
+        return $ssb
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
                 ->andExpect('employeeId')->equal()->str($employeeId)
@@ -91,17 +78,9 @@ class ReviewerRepo extends RepoBase
             throw \Exception('sequence cannot be null');
         }
        
-        $table = $this->getTable();
-        
-        return $this->cnn->ssb()
-            ->select(
-                't.employeeId',
-                't.name',
-                't.sequence',
-                't.created'
-            )
-            ->from("$table t")
-            ->end()
+        $ssb = $this->getBasicReviewerSsb();
+
+        return $ssb
             ->where()
                 ->expect($this->getDstKey())->equal()->str($dstId)
                 ->andExpect('sequence')->less()->int($sequence)
@@ -142,6 +121,43 @@ class ReviewerRepo extends RepoBase
             throw \Exception('dstId cannot be null');
         }
 
+        $ssb = $this->getBasicReviewerSsb();
+        
+        return $ssb
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+            ->end()
+            ->descOrderBy('t.sequence')
+            ->limit(1)
+            ->fetch(ReviewerDto::class);
+    }
+
+    public function fetchNextReviewer(string $dstId, string $employeeId): ? ReviewerDto
+    {
+        if (!$dstId) {
+            throw \Exception('dstId cannot be null');
+        }
+
+        if (!$employeeId) {
+            throw \Exception('employeeId cannot be null');
+        }
+
+        $curReviewer = $this->fetchReviewer($dstId, $employeeId);
+
+        $ssb = $this->getBasicReviewerSsb();
+        
+        return $ssb
+            ->where()
+                ->expect($this->getDstKey())->equal()->str($dstId)
+                ->andExpect('sequence')->greater()->int($curReviewer->sequence)
+            ->end()
+            ->ascOrderBy('sequence')
+            ->limit(1)
+            ->fetch(ReviewerDto::class);
+    }
+    
+    protected function getBasicReviewerSsb(): SelectSqlBuilder
+    {
         $table = $this->getTable();
         return $this->cnn->ssb()
             ->select(
@@ -151,13 +167,7 @@ class ReviewerRepo extends RepoBase
                 't.created'
             )
             ->from("$table t")
-            ->end()
-            ->where()
-                ->expect($this->getDstKey())->equal()->str($dstId)
-            ->end()
-            ->descOrderBy('t.sequence')
-            ->limit(1)
-            ->fetch(ReviewerDto::class);
+            ->end();
     }
 
     protected function getTable(): string
